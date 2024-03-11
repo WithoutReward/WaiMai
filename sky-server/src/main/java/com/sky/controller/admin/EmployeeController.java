@@ -116,4 +116,16 @@ public class EmployeeController {
         employeeService.startOrStop(status, id);
         return Result.success();
     }
+
+    /**
+     * 根据id查找员工信息
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    @ApiOperation("根据id查找员工信息")
+    public Result<Employee> getByID(@PathVariable long id) {
+        Employee employee = employeeService.getByID(id);
+        return Result.success(employee);
+    }
 }
