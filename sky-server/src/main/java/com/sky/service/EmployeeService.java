@@ -48,4 +48,12 @@ public interface EmployeeService {
      * @return
      */
     void update(EmployeeDTO employeeDTO);
+
+    /**
+     * 修改密码
+     * @param id
+     * @param newPassword
+     * @param oldPassword
+     */
+    void updatePassword(Long id, String newPassword, String oldPassword);
 }

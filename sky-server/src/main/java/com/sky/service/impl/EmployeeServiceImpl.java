@@ -158,4 +158,21 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         employeeMapper.update(employee);
     }
+
+    /**
+     * 修改密码
+     * @param id
+     * @param newPassword
+     * @param oldPassword
+     */
+    public void updatePassword(Long id, String newPassword, String oldPassword) {
+        Employee employee = employeeMapper.getByID(id);
+        String password = DigestUtils.md5DigestAsHex(oldPassword.getBytes());
+        if (!password.equals(employee.getPassword())) {
+            //密码错误
+            throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
+        }
+        employee.setPassword(DigestUtils.md5DigestAsHex(newPassword.getBytes()));
+        employeeMapper.update(employee);
+    }
 }
