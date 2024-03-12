@@ -5,6 +5,7 @@ import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
+import com.sky.dto.PasswordEditDTO;
 import com.sky.entity.Employee;
 import com.sky.properties.JwtProperties;
 import com.sky.result.PageResult;
@@ -145,16 +146,14 @@ public class EmployeeController {
 
     /**
      * 修改密码
-     * @param newPassword
-     * @param oldPassword
+     * @param passwordEditDTO
      * @return
      */
     @PutMapping("/editPassword")
     @ApiOperation("修改密码")
-    public Result updatePassword(String newPassword,String oldPassword){
+    public Result updatePassword(@RequestBody PasswordEditDTO passwordEditDTO){
         log.info("正在修改密码");
-        System.out.println(newPassword+oldPassword+"111");
-        employeeService.updatePassword(BaseContext.getCurrentId(),newPassword,oldPassword);
+        employeeService.updatePassword(BaseContext.getCurrentId(),passwordEditDTO);
         return Result.success();
     }
 }
