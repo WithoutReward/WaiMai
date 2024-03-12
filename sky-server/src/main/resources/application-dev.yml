@@ -7,7 +7,7 @@ sky:
     username: root
     password: 123456
   alioss:
-    endpoint: oss-cn-wuhan-lr.aliyuncs.com
-    access-key-id: LTAI5tCDxQKjUp5DeTYEtB8y
-    access-key-secret: fb1kpzmAdx9g6byfY1IK74bMmnxNS7
-    bucket-name: web-take-out-ctgu
+    endpoint: 
+    access-key-id: 
+    access-key-secret: 
+    bucket-name: 
