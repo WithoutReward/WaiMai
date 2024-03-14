@@ -40,4 +40,10 @@ public interface DishService {
      * @param dishDTO
      */
     void updateWithFlavor(DishDTO dishDTO);
+
+    /**
+     * 停售和起售菜品
+     * @param status
+     */
+    void startOrStopSell(String status,Long id);
 }

@@ -101,4 +101,17 @@ public class DishController {
         return Result.success();
     }
 
+    /**
+     * 停售和起售菜品
+     * @param status
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("停售和起售菜品")
+    public Result startOrStopSell(@PathVariable String status,Long id){
+        log.info("正在更改商品售卖状态：{},{}",status,id);
+        dishService.startOrStopSell(status,id);
+        return Result.success();
+    }
+
 }
