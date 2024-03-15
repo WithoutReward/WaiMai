@@ -9,5 +9,21 @@
         (#{categoryId},#{name},#{price},#{status},#{description},#{image},#{createTime},#{updateTime},#{createUser},#{updateUser})
     </insert>
 
+    <select id="pageQuery" resultType="com.sky.vo.SetmealVO">
+        select s.*,c.name as categoryName FROM setmeal s LEFT JOIN category c ON s.category_id = c.id
+        <where>
+            <if test="name != null">
+                AND s.name LIKE concat('%',#{name},'%')
+            </if>
+            <if test="categoryId != null">
+                AND s.category_id=#{categoryId}
+            </if>
+            <if test="status != null">
+                AND s.status=#{status}
+            </if>
+        </where>
+            order by create_time desc
+    </select>
+
 
 </mapper>
