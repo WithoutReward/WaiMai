@@ -40,4 +40,20 @@
         </set>
         where id=#{id}
     </update>
+
+    <select id="list" resultType="com.sky.entity.Dish" parameterType="com.sky.entity.Dish">
+        select * from dish
+        <where>
+            <if test="name!=null">
+                AND name like concat('%',#{name},'%')
+            </if>
+            <if test="categoryId!=null">
+                AND category_id=#{categoryId}
+            </if>
+            <if test="status!=null">
+                AND status=#{status}
+            </if>
+        </where>
+            order by create_time desc
+    </select>
 </mapper>
