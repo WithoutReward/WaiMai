@@ -8,10 +8,14 @@ import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.entity.Setmeal;
+import com.sky.entity.SetmealDish;
 import com.sky.exception.DeletionNotAllowedException;
+import com.sky.exception.SetdishDisableFailedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetMealDishMapper;
+import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
@@ -21,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -35,6 +40,9 @@ public class DishServiceImpl implements DishService {
 
     @Autowired
     private SetMealDishMapper setMealDishMapper;
+
+    @Autowired
+    private SetmealMapper setmealMapper;
 
     /**
      * 新增菜品及口味
@@ -155,6 +163,23 @@ public class DishServiceImpl implements DishService {
      * @param id
      */
     public void startOrStopSell(String status,Long id) {
+        List<Long> list = new ArrayList<>();
+        //如果停售菜品，但所在的套餐处于起售状态，则抛出异常
+        if(Integer.valueOf(status)==StatusConstant.DISABLE){
+            List<SetmealDish> dishesInSetmeal = setMealDishMapper.getByDishId(id);
+            if(dishesInSetmeal!=null && dishesInSetmeal.size()>0){
+                dishesInSetmeal.forEach(element ->
+                    list.add(element.getSetmealId()));
+                list.forEach(element ->
+                        list.set(list.indexOf(element),setmealMapper.getById(element).getStatus().longValue()));
+                for (Long element : list) {
+                    if (element.equals(1l)) {
+                        throw new SetdishDisableFailedException(MessageConstant.SETDISH_DISABLE_FAILED);
+                    }
+                }
+            }
+        }
+
         Dish dish = dishMapper.getById(id);
         if(status!=null && status.length()>0){
             dish.setStatus(Integer.valueOf(status));

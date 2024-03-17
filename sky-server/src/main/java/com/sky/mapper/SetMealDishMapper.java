@@ -38,4 +38,11 @@ public interface SetMealDishMapper {
      */
     @Select("select * from setmeal_dish where setmeal_id=#{id}")
     List<SetmealDish> getBySetmealId(Long id);
+
+    /**
+     * 根据菜品id获取所在的套餐
+     * @param id
+     */
+    @Select("select * from setmeal_dish where dish_id = #{id}")
+    List<SetmealDish> getByDishId(Long id);
 }
