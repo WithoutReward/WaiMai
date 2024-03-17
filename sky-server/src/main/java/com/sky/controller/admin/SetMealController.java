@@ -93,4 +93,18 @@ public class SetMealController {
         setMealService.updateWithDishes(setmealDTO);
         return Result.success();
     }
+
+    /**
+     * 套餐的起售与停售
+     *
+     * @param status
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("套餐的起售与停售")
+    public Result startOrStopSell(@PathVariable String status,Long id) {
+        log.info("正在起售/停售套餐：{},{}",id,status);
+        setMealService.startOrStopSell(status,id);
+        return Result.success();
+    }
 }
