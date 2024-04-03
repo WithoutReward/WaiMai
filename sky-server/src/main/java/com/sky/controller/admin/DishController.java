@@ -14,9 +14,11 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 菜品管理
@@ -31,6 +33,8 @@ public class DishController {
     @Autowired
     private DishService dishService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 新增菜品
@@ -42,7 +46,9 @@ public class DishController {
     public Result save(@RequestBody DishDTO dishDTO){
         log.info("正在新增菜品：{}",dishDTO);
         dishService.saveWithFlavor(dishDTO);
-
+        //精确清理添加到的种类(其实可以省略，因为默认新增菜品都是停售状态)
+        String key = "dish_" + dishDTO.getCategoryId();
+        cleanCache(key);
         return Result.success();
     }
 
@@ -70,6 +76,7 @@ public class DishController {
     public Result delete(@RequestParam List<Long> ids){
         log.info("删除菜品：{}",ids);
         dishService.deleteBatch(ids);
+        cleanCache("dish_*");
 
         return Result.success();
     }
@@ -98,6 +105,7 @@ public class DishController {
     public Result update(@RequestBody DishDTO dishDTO){
         log.info("当前修改的数据为：{}",dishDTO);
         dishService.updateWithFlavor(dishDTO);
+        cleanCache("dish_*");
 
         return Result.success();
     }
@@ -112,6 +120,7 @@ public class DishController {
     public Result startOrStopSell(@PathVariable String status,Long id){
         log.info("正在更改商品售卖状态：{},{}",status,id);
         dishService.startOrStopSell(status,id);
+        cleanCache("dish_*");
         return Result.success();
     }
 
@@ -127,4 +136,13 @@ public class DishController {
         return Result.success(list);
     }
 
+    /**
+     * 清理缓存
+     * @param pattern
+     */
+    //TODO 可以改成AOP
+    private void cleanCache(String pattern){
+        Set keys = redisTemplate.keys(pattern);
+        redisTemplate.delete(keys);
+    }
 }
