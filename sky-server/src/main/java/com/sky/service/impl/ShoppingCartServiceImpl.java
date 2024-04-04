@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -73,5 +74,34 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public List<ShoppingCart> list() {
         List<ShoppingCart> list = shoppingCartMapper.list(ShoppingCart.builder().userId(BaseContext.getCurrentId()).build());
         return list;
+    }
+
+    /**
+     * 从购物车中删除一件商品
+     * @param shoppingCartDTO
+     */
+    public void deleteOne(ShoppingCartDTO shoppingCartDTO) {
+        List<ShoppingCart> list =new ArrayList<>();
+        if (shoppingCartDTO.getDishId() != null) {
+            list = shoppingCartMapper.list(ShoppingCart.builder().dishId(shoppingCartDTO.getDishId()).userId(BaseContext.getCurrentId()).build());
+        } else {
+            list = shoppingCartMapper.list(ShoppingCart.builder().setmealId(shoppingCartDTO.getSetmealId()).userId(BaseContext.getCurrentId()).build());
+        }
+        ShoppingCart shoppingCart = ShoppingCart.builder().userId(BaseContext.getCurrentId()).build();
+        BeanUtils.copyProperties(shoppingCartDTO,shoppingCart);
+        if (list.get(0).getNumber()==1) {
+            shoppingCartMapper.deleteOne(shoppingCart);
+        }else {
+            list.get(0).setNumber(list.get(0).getNumber()-1);
+            list.get(0).setUserId(BaseContext.getCurrentId());
+            shoppingCartMapper.updateNumById(list.get(0));
+        }
+    }
+
+    /**
+     * 清空购物车
+     */
+    public void deleteAll() {
+        shoppingCartMapper.deletAll(BaseContext.getCurrentId());
     }
 }

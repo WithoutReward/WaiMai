@@ -22,5 +22,19 @@
         </where>
     </select>
 
+    <delete id="deleteOne">
+        delete from shopping_cart
+        <where>
+            <if test="dishId != null">
+                AND dish_id = #{dishId}
+            </if>
+            <if test="setmealId != null">
+                AND setmeal_id = #{setmealId}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+        </where>
+    </delete>
 
 </mapper>
