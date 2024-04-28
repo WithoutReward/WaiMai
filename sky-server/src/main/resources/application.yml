@@ -68,3 +68,8 @@ sky:
     notify-url: ${sky.wechat.notify-url}
     #退款成功的回调地址
     refund-notify-url: ${sky.wechat.refund-notify-url}
+
+  shop:
+    address: ${sky.shop.address}
+  baidu:
+    ak: ${sky.baidu.ak}
