@@ -4,7 +4,6 @@ package com.sky.controller.admin;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
-import com.sky.mapper.DishFlavorMapper;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.DishService;
@@ -12,11 +11,16 @@ import com.sky.vo.DishVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Delete;
+import org.redisson.api.RBloomFilter;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.redisson.api.RedissonClient;
 
+import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -36,6 +40,9 @@ public class DishController {
     @Autowired
     private RedisTemplate redisTemplate;
 
+//    @Autowired
+//    private RedissonClient redissonClient;
+
     /**
      * 新增菜品
      * @param dishDTO
@@ -45,7 +52,11 @@ public class DishController {
     @ApiOperation("新增菜品")
     public Result save(@RequestBody DishDTO dishDTO){
         log.info("正在新增菜品：{}",dishDTO);
-        dishService.saveWithFlavor(dishDTO);
+        Long dishID = dishService.saveWithFlavor(dishDTO);
+        DishVO dishVO = new DishVO();
+        BeanUtils.copyProperties(dishDTO,dishVO);
+        dishVO.setUpdateTime(LocalDateTime.now());
+        redisTemplate.opsForValue().set("Dish::"+dishID,dishVO);
         //精确清理添加到的种类(其实可以省略，因为默认新增菜品都是停售状态)
         String key = "dish_" + dishDTO.getCategoryId();
         cleanCache(key);
@@ -90,8 +101,18 @@ public class DishController {
     @ApiOperation("根据id查询菜品和口味")
     public Result<DishVO> getById(@PathVariable Long id) {
         log.info("当前查询的菜品id为：{}",id);
-        DishVO dish = dishService.getByIdWithFlavor(id);
-        return Result.success(dish);
+//        RBloomFilter<Long> bloomFilter = redissonClient.getBloomFilter("BLOOM_DISH_DISHID");
+//        if(!bloomFilter.contains(id)){
+//            return Result.error("布隆过滤器检验不通过");
+//        }
+        DishVO dishVO = (DishVO) redisTemplate.opsForValue().get("Dish::" + id);
+        if(dishVO !=null){
+            return Result.success(dishVO);
+        }else {
+            log.info("不走缓存");
+            DishVO dish = dishService.getByIdWithFlavor(id);
+            return Result.success(dish);
+        }
     }
 
 

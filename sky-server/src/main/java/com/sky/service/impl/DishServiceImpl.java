@@ -8,7 +8,6 @@ import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
-import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
 import com.sky.exception.DeletionNotAllowedException;
 import com.sky.exception.SetdishDisableFailedException;
@@ -50,7 +49,7 @@ public class DishServiceImpl implements DishService {
      */
     //由于是对多表进行操作，所以需要使用@Transactional注解进行限制，要么成功执行，要么捕获异常事务回滚
     @Transactional
-    public void saveWithFlavor(DishDTO dishDTO) {
+    public Long saveWithFlavor(DishDTO dishDTO) {
 
         Dish dish = new Dish();
         BeanUtils.copyProperties(dishDTO,dish);
@@ -69,7 +68,7 @@ public class DishServiceImpl implements DishService {
             //向口味表插入n条数据
             dishFlavorMapper.insertBatch(flavors);
         }
-
+        return dishId;
     }
 
     /**
@@ -222,5 +221,13 @@ public class DishServiceImpl implements DishService {
         }
 
         return dishVOList;
+    }
+
+    /**
+     * 查询所有的菜品信息
+     * @return
+     */
+    public List<Dish> listAll() {
+        return dishMapper.listAll();
     }
 }

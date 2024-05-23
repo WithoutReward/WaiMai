@@ -14,7 +14,7 @@ public interface DishService {
      *新增菜品及口味
      * @param dishDTO
      */
-    public void saveWithFlavor(DishDTO dishDTO);
+    public Long saveWithFlavor(DishDTO dishDTO);
 
 
     /**
@@ -54,6 +54,12 @@ public interface DishService {
      * @return
      */
     List<Dish> list(Long categoryId);
+
+    /**
+     * 查询所有的菜品
+     * @return
+     */
+    List<Dish> listAll();
 
     /**
      * 条件查询菜品和口味

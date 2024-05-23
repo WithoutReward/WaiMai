@@ -9,7 +9,6 @@ import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -67,4 +66,11 @@ public interface DishMapper {
      * @return
      */
     List<Dish> list(Dish dish);
+
+    /**
+     * 查询所有菜品信息
+     * @return
+     */
+    @Select("select * from dish")
+    List<Dish> listAll();
 }
