@@ -16,6 +16,8 @@ spring:
     host: ${sky.redis.host}
     port: ${sky.redis.port}
     database: ${sky.redis.database}
+  cache:
+    type: redis
 
 mybatis:
   #mapper配置文件
